@@ -17,15 +17,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Installer Gradle
-        run: sudo apt-get update && sudo apt-get install -y gradle
+      - name: Compiler avec Gradle Wrapper
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Compiler l'APK avec Gradle
-        run: gradle assembleDebug
-        working-directory: projet-extrait
+      - name: Lancer la compilation de l'APK
+        run: |
+          cd projet-extrait
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Sauvegarder l'APK en artefact
         uses: actions/upload-artifact@v4
         with:
           name: gestion-stock-apk
           path: projet-extrait/app/build/outputs/apk/debug/app-debug.apk
+          
