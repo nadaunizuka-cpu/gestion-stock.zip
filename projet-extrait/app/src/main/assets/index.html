@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tahiry – Stock</title>
+<style>
+:root{--bg:#f3f5f1;--sf:#fff;--tx:#1d2a24;--mu:#66756d;--ln:#dce2dc;--ac:#1f6b4f;--ac2:#e3efe8;--wa:#b4531a;--wa2:#fbeadc;--rd:#a8332b;--rd2:#f8e1de;--bt:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121916;--sf:#1b2420;--tx:#e6ede8;--mu:#93a39a;--ln:#2d3a34;--ac:#5cc79b;--ac2:#1d3a2e;--wa:#f0a064;--wa2:#3a2a1c;--rd:#f08a80;--rd2:#3c2220;--bt:#0c1a13}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121916;--sf:#1b2420;--tx:#e6ede8;--mu:#93a39a;--ln:#2d3a34;--ac:#5cc79b;--ac2:#1d3a2e;--wa:#f0a064;--wa2:#3a2a1c;--rd:#f08a80;--rd2:#3c2220;--bt:#0c1a13}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--sf);border-bottom:1px solid var(--ln)}
+h1{font:700 22px Georgia,"Times New Roman",serif;margin:0}
+h1 small{font:400 13px "Trebuchet MS",sans-serif;color:var(--mu);margin-left:8px}
+.bar{display:flex;gap:8px;align-items:center}
+select,input,button{font:inherit;color:var(--tx)}
+select,input{background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:7px 9px;max-width:100%}
+button{cursor:pointer;border:1px solid var(--ln);background:var(--sf);border-radius:6px;padding:7px 12px}
+button.p{background:var(--ac);color:var(--bt);border-color:var(--ac)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+nav{display:flex;gap:2px;padding:0 14px;background:var(--sf);border-bottom:1px solid var(--ln);overflow-x:auto}
+nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:12px 14px;color:var(--mu);white-space:nowrap}
+nav button.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:700}
+main{max-width:1100px;margin:0 auto;padding:18px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:18px}
+.k{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:14px}
+.k b{display:block;font:700 26px Georgia,serif}
+.k span{color:var(--mu);font-size:13px}
+.k.w{background:var(--wa2);border-color:var(--wa)}.k.r{background:var(--rd2);border-color:var(--rd)}
+.box{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:14px;margin-bottom:16px}
+h2{font:700 17px Georgia,serif;margin:0 0 10px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--ln)}
+th{color:var(--mu);font-weight:600;font-size:13px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.ok{background:var(--ac2);color:var(--ac)}.lo{background:var(--wa2);color:var(--wa)}.ou{background:var(--rd2);color:var(--rd)}
+.tl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tl input{flex:1;min-width:160px}
+dialog{border:1px solid var(--ln);border-radius:10px;background:var(--sf);color:var(--tx);padding:18px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+label{display:block;font-size:13px;color:var(--mu);margin:9px 0 3px}
+dialog input,dialog select{width:100%}
+.act{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:120px;margin-bottom:26px}
+.bars div{flex:1;background:var(--ac);border-radius:4px 4px 0 0;min-height:3px;position:relative}
+.bars i{position:absolute;top:100%;left:0;right:0;text-align:center;font:11px sans-serif;color:var(--mu);margin-top:3px;overflow:hidden;white-space:nowrap}
+.em{color:var(--mu);padding:18px 0}
+.in{color:var(--ac);font-weight:700}.out{color:var(--rd);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+ <h1>Tahiry<small id="sub"></small></h1>
+ <div class="bar">
+  <select id="lg" aria-label="Langue"><option value="mg">Malagasy</option><option value="fr">Français</option><option value="en">English</option></select>
+  <button id="th" aria-label="Thème">◐</button>
+ </div>
+</header>
+<nav id="nv"></nav>
+<main id="mn"></main>
+<dialog id="dg"><form method="dialog" id="fm"></form></dialog>
+<script>
+const T={
+fr:{sub:"Gestion de stock",dash:"Tableau de bord",prod:"Produits",mov:"Mouvements",po:"Achats",wh:"Entrepôts",val:"Valeur du stock",items:"Références",low:"Stock bas",out:"Rupture",top:"Valeur par entrepôt",search:"Rechercher nom, SKU, code-barres…",add:"Ajouter un produit",name:"Nom",sku:"SKU",bar:"Code-barres",cat:"Catégorie",qty:"Quantité",min:"Seuil d’alerte",cost:"Coût unitaire",price:"Prix de vente",wh1:"Entrepôt",status:"État",ok:"Disponible",lo:"Stock bas",ou:"Rupture",save:"Enregistrer",cancel:"Annuler",in:"Entrée",oc:"Sortie",adj:"Ajuster",type:"Type",date:"Date",note:"Note",new_mov:"Nouveau mouvement",none:"Aucune donnée.",sup:"Fournisseur",new_po:"Nouvelle commande",recv:"Réceptionner",pend:"En attente",done:"Reçue",total:"Total",lowl:"À réapprovisionner",all:"Tous",csv:"Exporter CSV",prodsel:"Produit",confirm:"Supprimer ce produit ?",ins:"Stock insuffisant.",reorder:"Commander",tr:"Transférer",rst:"Réinitialiser les données",act:"Actions"},
+mg:{sub:"Fitantanana tahiry",dash:"Tabilao",prod:"Entana",mov:"Fihetsehana",po:"Fividianana",wh:"Trano fitahirizana",val:"Sandan’ny tahiry",items:"Isan’ny entana",low:"Tahiry ambany",out:"Lany",top:"Sandany isaky ny trano",search:"Hikaroka anarana, SKU, kaody…",add:"Hanampy entana",name:"Anarana",sku:"SKU",bar:"Kaody-barre",cat:"Sokajy",qty:"Habetsany",min:"Fetra fampitandremana",cost:"Vidiny fividianana",price:"Vidiny fivarotana",wh1:"Trano fitahirizana",status:"Toetra",ok:"Misy",lo:"Tahiry ambany",ou:"Lany",save:"Tehirizo",cancel:"Foano",in:"Fidirana",oc:"Fivoahana",adj:"Ahitsio",type:"Karazana",date:"Daty",note:"Fanamarihana",new_mov:"Fihetsehana vaovao",none:"Tsy misy angona.",sup:"Mpamatsy",new_po:"Baiko vaovao",recv:"Raiso",pend:"Miandry",done:"Voaray",total:"Totalin’ny vidiny",lowl:"Mila fanafarana",all:"Rehetra",csv:"Alaivo CSV",prodsel:"Entana",confirm:"Fafana ve ity entana ity?",ins:"Tsy ampy ny tahiry.",reorder:"Alefaso baiko",tr:"Afindrao",rst:"Averina ny angona",act:"Hetsika"},
+en:{sub:"Inventory management",dash:"Dashboard",prod:"Products",mov:"Movements",po:"Purchases",wh:"Warehouses",val:"Stock value",items:"SKUs",low:"Low stock",out:"Out of stock",top:"Value by warehouse",search:"Search name, SKU, barcode…",add:"Add product",name:"Name",sku:"SKU",bar:"Barcode",cat:"Category",qty:"Quantity",min:"Reorder point",cost:"Unit cost",price:"Sale price",wh1:"Warehouse",status:"Status",ok:"In stock",lo:"Low stock",ou:"Out of stock",save:"Save",cancel:"Cancel",in:"Receipt",oc:"Issue",adj:"Adjust",type:"Type",date:"Date",note:"Note",new_mov:"New movement",none:"No data.",sup:"Supplier",new_po:"New order",recv:"Receive",pend:"Pending",done:"Received",total:"Total",lowl:"To reorder",all:"All",csv:"Export CSV",prodsel:"Product",confirm:"Delete this product?",ins:"Insufficient stock.",reorder:"Reorder",tr:"Transfer",rst:"Reset data",act:"Actions"}};
+const seed=()=>({w:["Antananarivo","Toamasina","Mahajanga"],
+p:[{id:1,n:"Riz Makalioka 25kg",s:"RIZ-025",b:"3560001",c:"Alimentation",q:140,m:50,co:68000,pr:79000,w:0},
+{id:2,n:"Huile végétale 5L",s:"HUI-005",b:"3560002",c:"Alimentation",q:18,m:30,co:32000,pr:38500,w:0},
+{id:3,n:"Savon Marseille",s:"SAV-001",b:"3560003",c:"Hygiène",q:0,m:40,co:1800,pr:2500,w:1},
+{id:4,n:"Câble USB-C 1m",s:"USB-C1",b:"3560004",c:"Électronique",q:75,m:20,co:6000,pr:12000,w:2},
+{id:5,n:"Cahier 96p",s:"CAH-096",b:"3560005",c:"Papeterie",q:260,m:100,co:1500,pr:2200,w:1}],
+mv:[],po:[],id:10});
+let S=null,L="fr",tab="dash",q="",flt="all";
+try{S=JSON.parse(localStorage.getItem("tahiry"));L=localStorage.getItem("tahiry_l")||"fr"}catch(e){}
+if(!S||!S.p)S=seed();
+const t=k=>T[L][k]||k,$=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const sv=()=>{try{localStorage.setItem("tahiry",JSON.stringify(S))}catch(e){}};
+const fm=n=>new Intl.NumberFormat(L==="en"?"en-US":"fr-FR").format(Math.round(n))+" Ar";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const st=p=>p.q<=0?"ou":p.q<=p.m?"lo":"ok";
+const tag=p=>`<span class="tag ${st(p)}">${t(st(p))}</span>`;
+const now=()=>new Date().toLocaleString(L==="en"?"en-GB":"fr-FR");
+function render(){document.documentElement.lang=L;$("#sub").textContent=t("sub");$("#lg").value=L;
+$("#nv").innerHTML=["dash","prod","mov","po","wh"].map(k=>`<button class="${tab===k?"on":""}" data-t="${k}">${t(k)}</button>`).join("");
+$$("#nv button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+({dash,prod,mov,po,wh})[tab]();sv()}
+function dash(){const v=S.p.reduce((a,p)=>a+p.q*p.co,0),lo=S.p.filter(p=>st(p)==="lo"),ou=S.p.filter(p=>st(p)==="ou");
+const bw=S.w.map((n,i)=>({n,v:S.p.filter(p=>p.w===i).reduce((a,p)=>a+p.q*p.co,0)})),mx=Math.max(1,...bw.map(x=>x.v)),rl=[...ou,...lo];
+$("#mn").innerHTML=`<div class="kp"><div class="k"><span>${t("val")}</span><b>${fm(v)}</b></div><div class="k"><span>${t("items")}</span><b>${S.p.length}</b></div><div class="k w"><span>${t("low")}</span><b>${lo.length}</b></div><div class="k r"><span>${t("out")}</span><b>${ou.length}</b></div></div>
+<div class="box"><h2>${t("top")}</h2><div class="bars">${bw.map(x=>`<div style="height:${x.v/mx*100}%" title="${fm(x.v)}"><i>${esc(x.n)}</i></div>`).join("")}</div></div>
+<div class="box"><h2>${t("lowl")}</h2>${rl.length?`<div class="tw"><table><tr><th>${t("name")}</th><th>${t("qty")}</th><th>${t("min")}</th><th>${t("status")}</th><th></th></tr>${rl.map(p=>`<tr><td>${esc(p.n)}</td><td>${p.q}</td><td>${p.m}</td><td>${tag(p)}</td><td><button data-r="${p.id}">${t("reorder")}</button></td></tr>`).join("")}</table></div>`:`<div class="em">${t("none")}</div>`}</div>`;
+$$("[data-r]").forEach(b=>b.onclick=()=>poForm(+b.dataset.r))}
+function prod(){const f=S.p.filter(p=>(flt==="all"||st(p)===flt)&&(p.n+p.s+p.b).toLowerCase().includes(q.toLowerCase()));
+$("#mn").innerHTML=`<div class="tl"><input id="sq" type="search" placeholder="${t("search")}" value="${esc(q)}"><select id="sf"><option value="all">${t("all")}</option><option value="ok">${t("ok")}</option><option value="lo">${t("lo")}</option><option value="ou">${t("ou")}</option></select><button class="p" id="ad">+ ${t("add")}</button><button id="ex">${t("csv")}</button></div>
+<div class="box tw">${f.length?`<table><tr><th>${t("name")}</th><th>${t("sku")}</th><th>${t("cat")}</th><th>${t("wh1")}</th><th>${t("qty")}</th><th>${t("price")}</th><th>${t("status")}</th><th>${t("act")}</th></tr>${f.map(p=>`<tr><td>${esc(p.n)}</td><td>${esc(p.s)}</td><td>${esc(p.c)}</td><td>${esc(S.w[p.w]||"")}</td><td><b>${p.q}</b></td><td>${fm(p.pr)}</td><td>${tag(p)}</td><td><button data-e="${p.id}">✎</button> <button data-d="${p.id}">✕</button></td></tr>`).join("")}</table>`:`<div class="em">${t("none")}</div>`}</div>`;
+$("#sf").value=flt;
+$("#sq").oninput=e=>{q=e.target.value;const c=e.target.selectionStart;prod();const i=$("#sq");i.focus();i.setSelectionRange(c,c)};
+$("#sf").onchange=e=>{flt=e.target.value;prod()};$("#ad").onclick=()=>pForm();$("#ex").onclick=csv;
+$$("[data-e]").forEach(b=>b.onclick=()=>pForm(+b.dataset.e));
+$$("[data-d]").forEach(b=>b.onclick=()=>{if(confirm(t("confirm"))){S.p=S.p.filter(p=>p.id!==+b.dataset.d);render()}})}
+function csv(){const r=[[t("name"),t("sku"),t("bar"),t("cat"),t("wh1"),t("qty"),t("cost"),t("price")],...S.p.map(p=>[p.n,p.s,p.b,p.c,S.w[p.w],p.q,p.co,p.pr])];
+const d=r.map(x=>x.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+d],{type:"text/csv"}));a.download="stock.csv";a.click()}catch(e){}}
+function dlg(h,ok){const d=$("#dg"),f=$("#fm");
+f.innerHTML=h+`<div class="act"><button type="button" id="cn">${t("cancel")}</button><button type="submit" class="p">${t("save")}</button></div>`;
+$("#cn").onclick=()=>d.close();
+f.onsubmit=e=>{e.preventDefault();if(ok()!==false)d.close()};d.showModal()}
+const wo=s=>S.w.map((n,i)=>`<option value="${i}" ${s===i?"selected":""}>${esc(n)}</option>`).join("");
+const po_=s=>S.p.map(p=>`<option value="${p.id}" ${s===p.id?"selected":""}>${esc(p.n)}</option>`).join("");
+function pForm(id){const p=S.p.find(x=>x.id===id)||{n:"",s:"",b:"",c:"",q:0,m:10,co:0,pr:0,w:0};
+dlg(`<h2>${t("add")}</h2><label>${t("name")}</label><input id="a1" required value="${esc(p.n)}"><label>${t("sku")}</label><input id="a2" required value="${esc(p.s)}"><label>${t("bar")}</label><input id="a3" value="${esc(p.b)}"><label>${t("cat")}</label><input id="a4" value="${esc(p.c)}"><label>${t("wh1")}</label><select id="a5">${wo(p.w)}</select><label>${t("qty")}</label><input id="a6" type="number" min="0" value="${p.q}"><label>${t("min")}</label><input id="a7" type="number" min="0" value="${p.m}"><label>${t("cost")}</label><input id="a8" type="number" min="0" value="${p.co}"><label>${t("price")}</label><input id="a9" type="number" min="0" value="${p.pr}">`,()=>{
+const o={n:$("#a1").value,s:$("#a2").value,b:$("#a3").value,c:$("#a4").value,w:+$("#a5").value,q:+$("#a6").value,m:+$("#a7").value,co:+$("#a8").value,pr:+$("#a9").value};
+if(p.id)Object.assign(p,o);else S.p.push({id:S.id++,...o});render()})}
+function mov(){const ms=[...S.mv].reverse();
+$("#mn").innerHTML=`<div class="tl"><button class="p" id="nm">+ ${t("new_mov")}</button></div><div class="box tw">${ms.length?`<table><tr><th>${t("date")}</th><th>${t("prodsel")}</th><th>${t("type")}</th><th>${t("qty")}</th><th>${t("note")}</th></tr>${ms.map(m=>{const p=S.p.find(x=>x.id===m.p);return`<tr><td>${m.d}</td><td>${esc(p?p.n:"—")}</td><td>${m.t==="in"?`<span class="in">▲ ${t("in")}</span>`:m.t==="out"?`<span class="out">▼ ${t("oc")}</span>`:t("adj")}</td><td>${m.q}</td><td>${esc(m.no||"")}</td></tr>`}).join("")}</table>`:`<div class="em">${t("none")}</div>`}</div>`;
+$("#nm").onclick=()=>mForm()}
+function mForm(){dlg(`<h2>${t("new_mov")}</h2><label>${t("prodsel")}</label><select id="m1">${po_()}</select><label>${t("type")}</label><select id="m2"><option value="in">${t("in")}</option><option value="out">${t("oc")}</option><option value="adj">${t("adj")} (=)</option></select><label>${t("qty")}</label><input id="m3" type="number" min="0" required value="1"><label>${t("note")}</label><input id="m4">`,()=>{
+const p=S.p.find(x=>x.id===+$("#m1").value),ty=$("#m2").value,n=+$("#m3").value;
+if(ty==="out"&&n>p.q){alert(t("ins"));return false}
+p.q=ty==="in"?p.q+n:ty==="out"?p.q-n:n;S.mv.push({p:p.id,t:ty,q:n,no:$("#m4").value,d:now()});render()})}
+function po(){const l=[...S.po].reverse();
+$("#mn").innerHTML=`<div class="tl"><button class="p" id="np">+ ${t("new_po")}</button></div><div class="box tw">${l.length?`<table><tr><th>#</th><th>${t("sup")}</th><th>${t("prodsel")}</th><th>${t("qty")}</th><th>${t("total")}</th><th>${t("status")}</th><th></th></tr>${l.map(o=>{const p=S.p.find(x=>x.id===o.p);return`<tr><td>${o.id}</td><td>${esc(o.s)}</td><td>${esc(p?p.n:"—")}</td><td>${o.q}</td><td>${fm(o.q*(p?p.co:0))}</td><td>${o.r?`<span class="tag ok">${t("done")}</span>`:`<span class="tag lo">${t("pend")}</span>`}</td><td>${o.r?"":`<button data-v="${o.id}">${t("recv")}</button>`}</td></tr>`}).join("")}</table>`:`<div class="em">${t("none")}</div>`}</div>`;
+$("#np").onclick=()=>poForm();
+$$("[data-v]").forEach(b=>b.onclick=()=>{const o=S.po.find(x=>x.id===+b.dataset.v),p=S.p.find(x=>x.id===o.p);if(p){p.q+=o.q;S.mv.push({p:p.id,t:"in",q:o.q,no:"PO #"+o.id,d:now()})}o.r=1;render()})}
+function poForm(pid){const p=S.p.find(x=>x.id===pid);
+dlg(`<h2>${t("new_po")}</h2><label>${t("sup")}</label><input id="o1" required><label>${t("prodsel")}</label><select id="o2">${po_(pid)}</select><label>${t("qty")}</label><input id="o3" type="number" min="1" required value="${p?Math.max(1,p.m*2-p.q):10}">`,()=>{
+S.po.push({id:S.id++,s:$("#o1").value,p:+$("#o2").value,q:+$("#o3").value,r:0});tab="po";render()})}
+function wh(){$("#mn").innerHTML=`<div class="kp">${S.w.map((n,i)=>{const ps=S.p.filter(p=>p.w===i);return`<div class="k"><span>${esc(n)}</span><b>${ps.reduce((a,p)=>a+p.q,0)}</b><span>${ps.length} ${t("items")} · ${fm(ps.reduce((a,p)=>a+p.q*p.co,0))}</span></div>`}).join("")}</div>
+<div class="box"><h2>${t("tr")}</h2><div class="tl"><select id="t1">${po_()}</select><select id="t2">${wo(0)}</select><button class="p" id="t3">${t("tr")}</button></div></div>
+<div class="tl"><button id="rs">${t("rst")}</button></div>`;
+$("#t3").onclick=()=>{const p=S.p.find(x=>x.id===+$("#t1").value);p.w=+$("#t2").value;render()};
+$("#rs").onclick=()=>{S=seed();render()}}
+$("#lg").onchange=e=>{L=e.target.value;try{localStorage.setItem("tahiry_l",L)}catch(x){}render()};
+$("#th").onclick=()=>{const r=document.documentElement,d=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"};
+render();
+</script>
+</body>
+</html>
