@@ -1,8 +1,6 @@
 name: Build APK
 
 on:
-  push:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -16,13 +14,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 8.7
+      - name: Installer Gradle sur le serveur
+        run: sudo apt-get update && sudo apt-get install -y gradle
 
-      - name: Build debug APK
+      - name: Generer le wrapper et compiler l'APK
         run: |
           cd projet-extrait
+          gradle wrapper --gradle-version 8.7
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
